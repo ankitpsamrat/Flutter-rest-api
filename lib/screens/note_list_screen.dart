@@ -1,31 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:rest_api/models/note_for_list.dart';
 import 'package:rest_api/screens/note_delete.dart';
 import 'package:rest_api/screens/note_screen.dart';
+import 'package:rest_api/services/note_service.dart';
 
-class NoteListScreen extends StatelessWidget {
-  // const NoteListScreen({super.key});
+class NoteListScreen extends StatefulWidget {
+  const NoteListScreen({super.key});
 
-  final notes = [
-    NoteForListing(
-      noteId: '1',
-      noteTitle: 'Note1',
-      createDateTime: DateTime.now(),
-      lastEditDateTime: DateTime.now(),
-    ),
-    NoteForListing(
-      noteId: '2',
-      noteTitle: 'Note2',
-      createDateTime: DateTime.now(),
-      lastEditDateTime: DateTime.now(),
-    ),
-    NoteForListing(
-      noteId: '3',
-      noteTitle: 'Note3',
-      createDateTime: DateTime.now(),
-      lastEditDateTime: DateTime.now(),
-    ),
-  ];
+  @override
+  State<NoteListScreen> createState() => _NoteListScreenState();
+}
+
+class _NoteListScreenState extends State<NoteListScreen> {
+  //
+
+  NoteService get service => GetIt.I<NoteService>();
+  List<NoteForListing> notes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    notes = service.getNoteList();
+  }
 
   String formatedDate(DateTime dateTime) {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
@@ -76,10 +73,7 @@ class NoteListScreen extends StatelessWidget {
                 ),
               ),
               subtitle: Text(
-                'Last eddited on ${formatedDate(notes[index].lastEditDateTime!)}',
-                // style: TextStyle(
-                //   color: Theme.of(context).primaryColor,
-                // ),
+                'Last eddited on ${formatedDate(notes[index].latestEditDateTime!)}',
               ),
               onTap: () {
                 Navigator.push(
