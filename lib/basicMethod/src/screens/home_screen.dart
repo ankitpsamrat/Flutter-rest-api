@@ -1,7 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:rest_api/basicMethod/src/services/user_api.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,43 +9,44 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<dynamic> users = [];
+  List<dynamic> _users = [];
 
   Future<void> _fetchUser() async {
-    const String apiUrl = 'https://randomuser.me/api/?results=20';
-
-    final uri = Uri.parse(apiUrl);
-    final response = await http.get(uri);
-    final body = response.body;
-    final json = jsonDecode(body);
+    final tempInfo = await UserApi.fetchUser();
 
     setState(() {
-      users = json['results'];
+      _users = tempInfo;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUser();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Screen'),
+        title: const Text('Random users'),
       ),
       body: ListView.builder(
-        itemCount: users.length,
+        itemCount: _users.length,
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
-          final user = users[index];
+          final userInfo = _users[index];
+
+          final name = userInfo['name']['first'];
+          final email = userInfo['email'] ?? '';
+          final imgUrl = userInfo['picture']['thumbnail'];
 
           return ListTile(
-            leading: Text(user['index'] ?? ''),
-            title: Text(user['email'] ?? ''),
-            // subtitle: Text(user['username']),
+            leading: ClipOval(child: Image.network(imgUrl)),
+            title: Text(name),
+            subtitle: Text(email),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _fetchUser,
-        child: const Icon(Icons.person),
       ),
     );
   }
