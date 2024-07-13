@@ -1,6 +1,18 @@
 part of 'posts_bloc.dart';
 
 @immutable
-sealed class PostsState {}
+abstract class PostsState {}
 
-final class PostsInitial extends PostsState {}
+abstract class PostsActionState extends PostsState {}
+
+class PostsInitial extends PostsState {}
+
+class PostFetchingLoadingState extends PostsState {}
+
+class PostFetchingErrorState extends PostsState {}
+
+class PostFetchingSuccessfulState extends PostsState {
+  final List<PostDataModel> posts;
+
+  PostFetchingSuccessfulState({required this.posts});
+}
